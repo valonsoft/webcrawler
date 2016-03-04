@@ -6,25 +6,29 @@
  */
 class iRobot
 {
-    protected $_url;
-    protected $_depth;
-    protected $_found = array();
-    // database connection details
-    private $_user;
-    private $_password;
-    private $_database;
 
+    // database connection details
+    private $_dbhandle ;
+
+    /**
+     * @param $user
+     * @param $pass
+     * @param $database
+     */
     // initialize class variables
-    public function __construct($url, $depth = 5, $connFile)
+    public function __construct($user, $pass, $database)
     {
-        if (!file ($connFile)) {
-            throw new BadMethodCallException ('Invalid connection file');
-            //exit();
+        if (!$user || !$pass || !$database) {
+            throw new BadMethodCallException();
         }
-        require_once ($connFile);
-        $this->_url = $url;
-        $this->_depth = $depth;
-        //$this-> user =
+
+        try {
+            $dbh = new PDO("mysql:host=localhost;dbname=$database", $user, $pass);
+            $this ->_dbhandle = $dbh;
+        } catch (PDOException $e) {
+            print "Error!: " . $e->getMessage() . "<br/>";
+            die();
+        }
 
     }
 
@@ -88,11 +92,8 @@ class iRobot
 
     }
 
-
-
-
-
-
-
+    public function __destruct() {
+        $this->_dbhandle = null;
+    }
 
 }
